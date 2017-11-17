@@ -1,0 +1,78 @@
+{
+  "name": "git-me",
+  "version": "0.0.0-development",
+  "description": "Set of git methods to work with specified repository",
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "commit": "git-cz",
+    "build": "npm run _clean && tsc --pretty",
+    "lint": "npm run _tslint && npm run _eclint",
+    "lint:fix": "npm run _tslint:fix && npm run _eclint:fix",
+    "test": "mocha -t 5000 --require ts-node/register --recursive src/**/*.spec.ts",
+    "test:watch": "npm run test -- --watch",
+    "_tslint": "tslint --force --format verbose \"src/**/*.ts\"",
+    "_tslint:fix": "prettier --config .prettierrc --write \"src/**/*.ts\" && tslint --fix \"src/**/*.ts\"",
+    "_eclint": "eclint check '**/*.*' '!**/node_modules/**' '!**/bin/**/*.*' '!.git/**/*.*' '!**/*.ts' '!**/*.js'",
+    "_eclint:fix": "eclint fix '**/*.*' '!**/node_modules/**' '!**/bin/**/*.*' '!.git/**/*.*' '!**/*.ts' '!**/*.js'",
+    "_clean": "rimraf lib",
+    "validate": "npm ls",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+  },
+  "dependencies": {
+    "fs-extra": "^4.0.2",
+    "fs-relative": "^1.0.1",
+    "loggerism": "^1.0.0",
+    "performance-now": "^2.1.0",
+    "promisify-spawn": "^1.0.0",
+    "p-limit": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.5",
+    "@types/fs-extra": "^4.0.2",
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^8.0.46",
+    "chai": "^4.1.2",
+    "commitizen": "^2.9.6",
+    "cz-conventional-changelog": "^2.1.0",
+    "eclint": "^2.5.0",
+    "mocha": "^4.0.1",
+    "precommit-hook": "^3.0.0",
+    "prettier": "^1.8.2",
+    "rimraf": "^2.6.2",
+    "semantic-release": "^8.2.0",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.8.0",
+    "tslint-config-prettier": "^1.6.0",
+    "typescript": "^2.6.1"
+  },
+  "keywords": [
+    "fs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TargetProcess/git-me.git"
+  },
+  "author": "Pavel Shapel <shapel@targetprocess.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TargetProcess/git-me/issues"
+  },
+  "homepage": "https://github.com/TargetProcess/git-me#readme",
+  "pre-commit": [
+    "lint",
+    "validate",
+    "test"
+  ],
+  "engines": {
+    "node": ">= 8.8.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  }
+}
