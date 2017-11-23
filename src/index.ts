@@ -125,8 +125,10 @@ export const makeGitStorage = async (
             await writeGit(`commit -m "${message.replace('"', '"')}"`)
             await writeGit('push')
           } catch (e) {
-            if (e.message.indexOf('nothing to commit') < 0) {
+            if (!e.message || e.message.indexOf('nothing to commit') < 0) {
               throw e
+            } else {
+              logger.warn(e)
             }
           }
           const version = await writeGit('log -n 1 --pretty=format:%H')
