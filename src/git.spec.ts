@@ -13,4 +13,11 @@ describe('parseCommand', () => {
     expect(result.length).to.be.equals(6)
     expect(result[5]).to.be.equals('tmp\\git\\read')
   })
+  it('should skip several spaces', () => {
+    const result = parseCommand(
+      'clone -b master    --  git@tp.githost.io:staging/configs.git tmp\\git\\read '
+    )
+    expect(result.length).to.be.equals(6)
+    expect(result[5]).to.be.equals('tmp\\git\\read')
+  })
 })

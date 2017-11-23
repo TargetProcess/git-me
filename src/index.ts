@@ -19,7 +19,15 @@ export interface IGitStorage {
   ): Promise<T>
   getHistory(path: string): Promise<string[]>
   commitAndPush<T>(
-    message: string,
+    meta:
+      | {
+          message: string
+          author?: {
+            name: string
+            email: string
+          }
+        }
+      | string,
     action: (storage: IFileStorage) => Promise<T>
   ): Promise<{ result: T; version: string }>
 }
@@ -113,7 +121,15 @@ export const makeGitStorage = async (
       return result.split('\n')
     },
     commitAndPush: async <T>(
-      message: string,
+      meta:
+        | {
+            message: string
+            author?: {
+              name: string
+              email: string
+            }
+          }
+        | string,
       action: (storage: IFileStorage) => Promise<T>
     ): Promise<{ result: T; version: string }> => {
       return <Promise<{ result: T; version: string }>>writeQueue(async () => {
@@ -121,8 +137,15 @@ export const makeGitStorage = async (
           await writeGit('pull')
           const result = await action(writeStorage)
           await writeGit('add -A')
+          const message = typeof meta === 'string' ? meta : meta.message
+          const author =
+            typeof meta === 'string' ? '' : `${meta.author.name} <${meta.author.email}>`
           try {
-            await writeGit(`commit -m "${message.replace('"', '"')}"`)
+            await writeGit(
+              `commit -m "${message.replace(/\"/g, '\\"')}" ${
+                author ? '--author="' + author.replace(/\"/g, '\\"') + '"' : ''
+              }`
+            )
             await writeGit('push')
           } catch (e) {
             if (!e.message || e.message.indexOf('nothing to commit') < 0) {
