@@ -130,12 +130,13 @@ export const makeGitStorage = async (
             }
           }
         | string,
-      action: (storage: IFileStorage) => Promise<T>
+      action: (storage: IFileStorage, version: string) => Promise<T>
     ): Promise<{ result: T; version: string }> => {
       return <Promise<{ result: T; version: string }>>writeQueue(async () => {
         try {
           await writeGit('pull')
-          const result = await action(writeStorage)
+          let version = await writeGit('log -n 1 --pretty=format:%H')
+          const result = await action(writeStorage, version)
           await writeGit('add -A')
           const message = typeof meta === 'string' ? meta : meta.message
           const author =
@@ -154,7 +155,7 @@ export const makeGitStorage = async (
               logger.warn(e)
             }
           }
-          const version = await writeGit('log -n 1 --pretty=format:%H')
+          version = await writeGit('log -n 1 --pretty=format:%H')
           return { result, version }
         } finally {
           await writeGit('reset --hard')
