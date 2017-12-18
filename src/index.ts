@@ -140,7 +140,9 @@ export const makeGitStorage = async (
           await writeGit('add -A')
           const message = typeof meta === 'string' ? meta : meta.message
           const author =
-            typeof meta === 'string' ? '' : `${meta.author.name} <${meta.author.email}>`
+            typeof meta === 'string'
+              ? ''
+              : meta && meta.author ? `${meta.author.name} <${meta.author.email}>` : ''
           try {
             await writeGit(
               `commit -m "${message.replace(/\"/g, '\\"')}" ${
