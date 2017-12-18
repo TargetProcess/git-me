@@ -28,7 +28,7 @@ export interface IGitStorage {
           }
         }
       | string,
-    action: (storage: IFileStorage) => Promise<T>
+    action: (storage: IFileStorage, version: string) => Promise<T>
   ): Promise<{ result: T; version: string }>
 }
 
