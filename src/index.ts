@@ -99,8 +99,7 @@ export const makeGitStorage = async (
       version?: string
     ): Promise<T> => {
       if (!version) {
-        const lastVersion = await actualize()
-        return action(readStorage, lastVersion)
+        version = await actualize()
       }
       return <Promise<T>>writeQueue(async () => {
         try {
