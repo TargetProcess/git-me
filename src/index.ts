@@ -98,14 +98,16 @@ export const makeGitStorage = async (
       action: (storage: IReadFileStorage, version: string) => Promise<T>,
       version?: string
     ): Promise<T> => {
-      if (!version) {
-        version = await actualize()
-      }
       return <Promise<T>>writeQueue(async () => {
         try {
           await writeGit('pull')
-          await writeGit(`checkout ${version}`)
-          const result = await action(writeStorage, version)
+          let lastVersion: string
+          if (!version) {
+            lastVersion = await writeGit('log -n 1 --pretty=format:%H')
+          } else {
+            await writeGit(`checkout ${version}`)
+          }
+          const result = await action(writeStorage, version ? version : lastVersion)
           return result
         } finally {
           if (version) {
