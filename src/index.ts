@@ -118,7 +118,9 @@ export const makeGitStorage = async (
     },
     getHistory: async (p: string): Promise<string[]> => {
       await actualize()
-      const result = await readGit(`log --pretty=format:%H -- ${p}`)
+      const result = await readGit(
+        `log --pretty=format:%H -- ${config.basePath ? path.join(config.basePath, p) : p}`
+      )
       return result.split('\n')
     },
     commitAndPush: async <T>(
