@@ -12,12 +12,19 @@ export interface IConfig {
   basePath?: string
 }
 
+export interface IHistoryOptions {
+  // Limit the number of commits to output
+  maxCount?: number
+  // Skip number commits before starting to show the commit output
+  skip?: number
+}
+
 export interface IGitStorage {
   useVersion<T>(
     action: (storage: IReadFileStorage, version: string) => Promise<T>,
     version?: string
   ): Promise<T>
-  getHistory(path: string): Promise<string[]>
+  getHistory(path: string, options?: IHistoryOptions): Promise<string[]>
   commitAndPush<T>(
     meta:
       | {
@@ -116,10 +123,21 @@ export const makeGitStorage = async (
         }
       })
     },
-    getHistory: async (p: string): Promise<string[]> => {
+    getHistory: async (p: string, options?: IHistoryOptions): Promise<string[]> => {
       await actualize()
+      const rawOptions: string[] = []
+      if (options) {
+        if (typeof options.maxCount !== 'undefined') {
+          rawOptions.push('--max-count=' + options.maxCount)
+        }
+        if (typeof options.skip !== 'undefined') {
+          rawOptions.push('--skip=' + options.skip)
+        }
+      }
       const result = await readGit(
-        `log --pretty=format:%H -- ${config.basePath ? path.join(config.basePath, p) : p}`
+        `log --pretty=format:%H ${rawOptions.join(' ')} -- ${
+          config.basePath ? path.join(config.basePath, p) : p
+        }`
       )
       return result.split('\n')
     },
