@@ -66,8 +66,8 @@ export const makeGitStorage = async (
   const init = async () => {
     await fs.emptyDir(config.targetPath)
 
-    await fs.ensureDir(readGitPath)
-    await fs.ensureDir(writeGitPath)
+    await fs.emptyDir(readGitPath)
+    await fs.emptyDir(writeGitPath)
 
     await git()(`clone -b ${config.branchName} -- ${config.repoUrl} ${readGitPath}`)
 
