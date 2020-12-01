@@ -28,13 +28,15 @@
     "loggerism": "^1.0.0",
     "p-limit": "^1.2.0",
     "performance-now": "^2.1.0",
-    "promisify-spawn": "^1.0.0"
+    "promisify-spawn": "^1.0.0",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "@types/chai": "^4.1.0",
     "@types/fs-extra": "^4.0.7",
     "@types/mocha": "^2.2.46",
     "@types/node": "^8.5.8",
+    "@types/uuid": "^8.3.0",
     "chai": "^4.1.2",
     "commitizen": "^2.9.6",
     "cz-conventional-changelog": "^2.1.0",
