@@ -4,7 +4,7 @@ import { ILogger } from 'loggerism'
 import * as pLimit from 'p-limit'
 import * as path from 'path'
 import { v4 as uuidv4 } from 'uuid'
-import { Git } from './git'
+import { Git, LogLevel } from './git'
 import { createQueueTimingWrapper } from './queueTiming'
 
 export interface IConfig {
@@ -50,7 +50,7 @@ export const makeGitStorage = async (
   logger: ILogger,
   makeReadFileStorage: (basePath: string) => IReadFileStorage,
   makeFileStorage: (basePath: string) => IFileStorage,
-  enableLogging: boolean
+  timingLogLevel: LogLevel = 'debug'
 ): Promise<IGitStorage> => {
   const readGitPath = path.join(config.targetPath, 'read')
   const writeGitPath = path.join(config.targetPath, 'write')
@@ -65,7 +65,7 @@ export const makeGitStorage = async (
   const writeGit = git(writeGitPath)
 
   const writeQueue = pLimit(1)
-  const queueTiming = createQueueTimingWrapper(logger, writeQueue, enableLogging, writeGit)
+  const queueTiming = createQueueTimingWrapper(logger, writeQueue, timingLogLevel, writeGit)
 
   const init = async () => {
     await fs.emptyDir(config.targetPath)

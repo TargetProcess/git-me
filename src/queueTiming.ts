@@ -1,16 +1,17 @@
 import { ILogger, LogMethod } from 'loggerism'
 import now = require('performance-now')
 import { v4 as uuidv4 } from 'uuid'
+import { LogLevel } from './git'
 
 export type Queue = <T>(fn: () => Promise<T>) => Promise<T>
 
 export const createQueueTimingWrapper = (
   logger: ILogger,
   queue: Queue,
-  enableLogging: boolean,
+  timingLogLevel: LogLevel,
   writeGit: (command: string, correlationId: string) => Promise<string>
 ) => {
-  const log: LogMethod = (enableLogging ? logger.info : logger.debug).bind(logger)
+  const log: LogMethod = (timingLogLevel === 'info' ? logger.info : logger.debug).bind(logger)
 
   return async <T>(
     operationName: string,

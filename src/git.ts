@@ -4,6 +4,7 @@ import spawn from 'promisify-spawn'
 
 export type Timing = ReturnType<typeof makeTiming>
 export type Git = ReturnType<typeof git>
+export type LogLevel = 'debug' | 'info'
 
 export const git = (timing: Timing) => (repoPath?: string) => async (
   command: string | string[],
@@ -25,12 +26,12 @@ export const git = (timing: Timing) => (repoPath?: string) => async (
   )
 }
 
-export const makeTiming = (logger: ILogger, enableLogging: boolean) => async <T>(
+export const makeTiming = (logger: ILogger, logLevel: LogLevel = 'debug') => async <T>(
   name: string,
   action: () => Promise<T>,
   correlationId: string
 ): Promise<T> => {
-  const log: LogMethod = (enableLogging ? logger.info : logger.debug).bind(logger)
+  const log: LogMethod = (logLevel === 'info' ? logger.info : logger.debug).bind(logger)
   const startTime = now()
 
   logger.debug(`Executing ${name}`)
