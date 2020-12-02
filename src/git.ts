@@ -1,12 +1,14 @@
-import { ILogger } from 'loggerism'
+import { ILogger, LogMethod } from 'loggerism'
 import now = require('performance-now')
 import spawn from 'promisify-spawn'
 
-export type Timing = <T>(operation: string, action: () => Promise<T>) => Promise<T>
-export type Git = (repoPath?: string) => (command: string) => Promise<string>
+export type Timing = ReturnType<typeof makeTiming>
+export type Git = ReturnType<typeof git>
+export type LogLevel = 'debug' | 'info'
 
 export const git = (timing: Timing) => (repoPath?: string) => async (
-  command: string | string[]
+  command: string | string[],
+  correlationId: string
 ): Promise<string> => {
   let args: string[]
   let commandName: string
@@ -19,23 +21,29 @@ export const git = (timing: Timing) => (repoPath?: string) => async (
   }
   return timing(
     commandName,
-    () => (repoPath ? spawn('git', args, { cwd: repoPath }) : spawn('git', args))
+    () => (repoPath ? spawn('git', args, { cwd: repoPath }) : spawn('git', args)),
+    correlationId
   )
 }
 
-export const makeTiming = (logger: ILogger) => async <T>(
+export const makeTiming = (logger: ILogger, logLevel: LogLevel = 'debug') => async <T>(
   name: string,
-  action: () => Promise<T>
+  action: () => Promise<T>,
+  correlationId: string
 ): Promise<T> => {
+  const log: LogMethod = (logLevel === 'info' ? logger.info : logger.debug).bind(logger)
   const startTime = now()
 
   logger.debug(`Executing ${name}`)
 
   const result = await action()
 
-  const end = new Date()
   const ms = Math.floor(now() - startTime)
-  logger.debug(`Executing ${name} (took ${ms} ms)`)
+  log('Git call finished', {
+    command: name,
+    durationMs: ms,
+    correlationId
+  })
   return result
 }
 

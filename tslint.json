@@ -13,7 +13,6 @@
     ],
     "no-implicit-dependencies": [true, "dev"],
     "no-angle-bracket-type-assertion": false,
-    "no-unused-variable": [true],
     "arrow-parens": [true, "ban-single-arg-parens"],
     "whitespace": false
   }
