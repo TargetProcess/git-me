@@ -41,7 +41,7 @@ export interface IGitStorage {
   ): Promise<{ result: T; version: string }>
 }
 
-export { git, Git, makeTiming } from './git'
+export { git, Git, makeTiming, LogLevel } from './git'
 export { IFileStorage, IReadFileStorage } from 'fs-relative'
 
 export const makeGitStorage = async (
